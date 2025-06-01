@@ -26,7 +26,10 @@ export class UserController {
   @Get(':id')
   findOne(@Param('id') id: string): UserResponse {
     if (!uuidValidate(id)) {
-      throw new HttpException('Bad request. userId is invalid (not uuid)', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'Bad request. userId is invalid (not uuid)',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     const user = this.userService.findOne(id);
@@ -55,7 +58,10 @@ export class UserController {
     @Body() updatePasswordDto: UpdatePasswordDto,
   ): UserResponse {
     if (!uuidValidate(id)) {
-      throw new HttpException('Bad request. userId is invalid (not uuid)', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'Bad request. userId is invalid (not uuid)',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     if (!updatePasswordDto.oldPassword || !updatePasswordDto.newPassword) {
@@ -86,7 +92,10 @@ export class UserController {
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id') id: string): void {
     if (!uuidValidate(id)) {
-      throw new HttpException('Bad request. userId is invalid (not uuid)', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'Bad request. userId is invalid (not uuid)',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     const isDeleted = this.userService.remove(id);

@@ -14,10 +14,10 @@ export interface CreateTrackDto {
 }
 
 export interface UpdateTrackDto {
-  name?: string;
+  name: string;
   artistId?: string | null;
   albumId?: string | null;
-  duration?: number;
+  duration: number;
 }
 
-export type TrackResponse = Track; 
+export type TrackResponse = Track;

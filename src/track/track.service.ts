@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
-import { Track, CreateTrackDto, UpdateTrackDto, TrackResponse } from './track.types';
+import {
+  Track,
+  CreateTrackDto,
+  UpdateTrackDto,
+  TrackResponse,
+} from './track.types';
 
 @Injectable()
 export class TrackService {
@@ -46,4 +51,4 @@ export class TrackService {
     this.tracks.splice(trackIndex, 1);
     return true;
   }
-} 
+}

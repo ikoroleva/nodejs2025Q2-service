@@ -10,4 +10,4 @@ export interface SignupDto {
 
 export interface AuthResponse {
   token: string;
-} 
+}

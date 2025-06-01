@@ -7,4 +7,4 @@ import { TrackService } from './track.service';
   providers: [TrackService],
   exports: [TrackService],
 })
-export class TrackModule {} 
+export class TrackModule {}
