@@ -1,0 +1,78 @@
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  HttpException,
+  HttpStatus,
+  HttpCode,
+} from '@nestjs/common';
+import { validate as uuidValidate } from 'uuid';
+import { TrackService } from './track.service';
+import { CreateTrackDto, UpdateTrackDto, TrackResponse } from './track.types';
+
+@Controller('track')
+export class TrackController {
+  constructor(private readonly trackService: TrackService) {}
+
+  @Get()
+  findAll(): TrackResponse[] {
+    return this.trackService.findAll();
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string): TrackResponse {
+    if (!uuidValidate(id)) {
+      throw new HttpException('Bad request. trackId is invalid (not uuid)', HttpStatus.BAD_REQUEST);
+    }
+
+    const track = this.trackService.findOne(id);
+    if (!track) {
+      throw new HttpException('Track not found', HttpStatus.NOT_FOUND);
+    }
+
+    return track;
+  }
+
+  @Post()
+  @HttpCode(HttpStatus.CREATED)
+  create(@Body() createTrackDto: CreateTrackDto): TrackResponse {
+    if (!createTrackDto.name || !createTrackDto.duration) {
+      throw new HttpException('Bad request. Body does not contain required fields', HttpStatus.BAD_REQUEST);
+    }
+    return this.trackService.create(createTrackDto);
+  }
+
+  @Put(':id')
+  update(
+    @Param('id') id: string,
+    @Body() updateTrackDto: UpdateTrackDto,
+  ): TrackResponse {
+    if (!uuidValidate(id)) {
+      throw new HttpException('Bad request. trackId is invalid (not uuid)', HttpStatus.BAD_REQUEST);
+    }
+
+    const track = this.trackService.update(id, updateTrackDto);
+    if (!track) {
+      throw new HttpException('Track not found', HttpStatus.NOT_FOUND);
+    }
+
+    return track;
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  remove(@Param('id') id: string): void {
+    if (!uuidValidate(id)) {
+      throw new HttpException('Bad request. trackId is invalid (not uuid)', HttpStatus.BAD_REQUEST);
+    }
+
+    const isRemoved = this.trackService.remove(id);
+    if (!isRemoved) {
+      throw new HttpException('Track not found', HttpStatus.NOT_FOUND);
+    }
+  }
+} 
