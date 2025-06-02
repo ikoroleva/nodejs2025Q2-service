@@ -75,9 +75,6 @@ npm run start:dev
 npm run test
 npm run test:e2e
 
-# Run tests with authorization
-npm run test:auth
-
 # Lint and format
 npm run lint
 npm run format
