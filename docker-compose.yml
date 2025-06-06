@@ -5,12 +5,12 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    image: ${DOCKER_USERNAME}/home-library-app:latest
     ports:
       - "4000:4000"
     environment:
-      - PORT=4000
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/home_library
       - NODE_ENV=production
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/home_library
     depends_on:
       - db
     networks:
@@ -20,6 +20,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.postgres
+    image: ${DOCKER_USERNAME}/home-library-db:latest
     ports:
       - "5432:5432"
     environment:
