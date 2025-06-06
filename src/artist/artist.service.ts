@@ -1,75 +1,58 @@
 import { Injectable } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
 import {
-  Artist,
   CreateArtistDto,
   UpdateArtistDto,
   ArtistResponse,
 } from './artist.types';
 import { TrackService } from '../track/track.service';
 import { AlbumService } from '../album/album.service';
+import { ArtistRepository } from './artist.repository';
+import { Artist } from './artist.entity';
 
 @Injectable()
 export class ArtistService {
-  private artists: Artist[] = [];
-
   constructor(
+    private readonly artistRepository: ArtistRepository,
     private readonly trackService: TrackService,
     private readonly albumService: AlbumService,
   ) {}
 
-  create(createArtistDto: CreateArtistDto): ArtistResponse {
-    const newArtist: Artist = {
-      id: uuidv4(),
-      name: createArtistDto.name,
-      grammy: createArtistDto.grammy,
-    };
-
-    this.artists.push(newArtist);
-    return newArtist;
+  async create(createArtistDto: CreateArtistDto): Promise<ArtistResponse> {
+    return this.artistRepository.create(createArtistDto);
   }
 
-  findAll(): ArtistResponse[] {
-    return this.artists;
+  async findAll(): Promise<ArtistResponse[]> {
+    return this.artistRepository.findAll();
   }
 
-  findOne(id: string): ArtistResponse | null {
-    return this.artists.find((artist) => artist.id === id) || null;
+  async findOne(id: string): Promise<ArtistResponse | null> {
+    return this.artistRepository.findById(id);
   }
 
-  update(id: string, updateArtistDto: UpdateArtistDto): ArtistResponse | null {
-    const artistIndex = this.artists.findIndex((artist) => artist.id === id);
-    if (artistIndex === -1) return null;
-
-    this.artists[artistIndex] = {
-      ...this.artists[artistIndex],
-      ...updateArtistDto,
-    };
-
-    return this.artists[artistIndex];
+  async update(
+    id: string,
+    updateArtistDto: UpdateArtistDto,
+  ): Promise<ArtistResponse | null> {
+    return this.artistRepository.update(id, updateArtistDto);
   }
 
-  remove(id: string): boolean {
-    const artistIndex = this.artists.findIndex((artist) => artist.id === id);
-    if (artistIndex === -1) return false;
-
+  async remove(id: string): Promise<boolean> {
     // Update related tracks
-    const tracks = this.trackService.findAll();
-    tracks.forEach((track) => {
-      if (track.artistId === id) {
-        this.trackService.update(track.id, { ...track, artistId: null });
+    const tracks = await this.trackService.findAll();
+    for (const track of tracks) {
+      if (track.artist.id === id) {
+        await this.trackService.update(track.id, { ...track, artist: null });
       }
-    });
+    }
 
     // Update related albums
-    const albums = this.albumService.findAll();
-    albums.forEach((album) => {
-      if (album.artistId === id) {
-        this.albumService.update(album.id, { ...album, artistId: null });
+    const albums = await this.albumService.findAll();
+    for (const album of albums) {
+      if (album.artist.id === id) {
+        await this.albumService.update(album.id, { ...album, artist: null });
       }
-    });
+    }
 
-    this.artists.splice(artistIndex, 1);
-    return true;
+    return this.artistRepository.delete(id);
   }
 }

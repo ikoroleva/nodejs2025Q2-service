@@ -19,12 +19,12 @@ export class AlbumController {
   constructor(private readonly albumService: AlbumService) {}
 
   @Get()
-  findAll(): AlbumResponse[] {
+  async findAll(): Promise<AlbumResponse[]> {
     return this.albumService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string): AlbumResponse {
+  async findOne(@Param('id') id: string): Promise<AlbumResponse> {
     if (!uuidValidate(id)) {
       throw new HttpException(
         'Bad request. albumId is invalid (not uuid)',
@@ -32,7 +32,7 @@ export class AlbumController {
       );
     }
 
-    const album = this.albumService.findOne(id);
+    const album = await this.albumService.findOne(id);
     if (!album) {
       throw new HttpException('Album not found', HttpStatus.NOT_FOUND);
     }
@@ -42,7 +42,7 @@ export class AlbumController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() createAlbumDto: CreateAlbumDto): AlbumResponse {
+  async create(@Body() createAlbumDto: CreateAlbumDto): Promise<AlbumResponse> {
     if (!createAlbumDto.name || typeof createAlbumDto.year !== 'number') {
       throw new HttpException(
         'Bad request. Body does not contain required fields',
@@ -53,10 +53,10 @@ export class AlbumController {
   }
 
   @Put(':id')
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateAlbumDto: UpdateAlbumDto,
-  ): AlbumResponse {
+  ): Promise<AlbumResponse> {
     if (!uuidValidate(id)) {
       throw new HttpException(
         'Bad request. albumId is invalid (not uuid)',
@@ -74,7 +74,7 @@ export class AlbumController {
       );
     }
 
-    const album = this.albumService.update(id, updateAlbumDto);
+    const album = await this.albumService.update(id, updateAlbumDto);
     if (!album) {
       throw new HttpException('Album not found', HttpStatus.NOT_FOUND);
     }
@@ -84,7 +84,7 @@ export class AlbumController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id') id: string): void {
+  async remove(@Param('id') id: string): Promise<void> {
     if (!uuidValidate(id)) {
       throw new HttpException(
         'Bad request. albumId is invalid (not uuid)',
@@ -92,7 +92,7 @@ export class AlbumController {
       );
     }
 
-    const isRemoved = this.albumService.remove(id);
+    const isRemoved = await this.albumService.remove(id);
     if (!isRemoved) {
       throw new HttpException('Album not found', HttpStatus.NOT_FOUND);
     }

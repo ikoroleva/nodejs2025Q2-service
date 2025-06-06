@@ -1,74 +1,72 @@
 import { Injectable } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
-import {
-  User,
-  CreateUserDto,
-  UpdatePasswordDto,
-  UserResponse,
-} from './user.types';
+import { CreateUserDto, UpdatePasswordDto, UserResponse } from './user.types';
+import { UserRepository } from './user.repository';
+import { User } from './user.entity';
 
 @Injectable()
 export class UserService {
-  private users: User[] = [];
+  constructor(private readonly userRepository: UserRepository) {}
 
-  create(createUserDto: CreateUserDto): UserResponse {
-    const newUser: User = {
-      id: uuidv4(),
+  async create(createUserDto: CreateUserDto): Promise<UserResponse> {
+    const existingUser = await this.userRepository.findByLogin(
+      createUserDto.login,
+    );
+    if (existingUser) {
+      const { password: _password, ...userResponse } = existingUser;
+      return userResponse;
+    }
+
+    const newUser = await this.userRepository.create({
       login: createUserDto.login,
       password: createUserDto.password,
       version: 1,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-    };
+    });
 
-    this.users.push(newUser);
     const { password: _password, ...userResponse } = newUser;
     return userResponse;
   }
 
-  findAll(): UserResponse[] {
-    return this.users.map(({ password: _password, ...user }) => user);
+  async findAll(): Promise<UserResponse[]> {
+    const users = await this.userRepository.findAll();
+    return users.map(({ password: _password, ...user }) => user);
   }
 
-  findOne(id: string): UserResponse | null {
-    const user = this.users.find((user) => user.id === id);
+  async findOne(id: string): Promise<UserResponse | null> {
+    const user = await this.userRepository.findById(id);
     if (!user) return null;
 
     const { password: _password, ...userResponse } = user;
     return userResponse;
   }
 
-  findByLogin(login: string): User | null {
-    return this.users.find((user) => user.login === login) || null;
+  async findByLogin(login: string): Promise<User | null> {
+    return this.userRepository.findByLogin(login);
   }
 
-  updatePassword(
+  async updatePassword(
     id: string,
     updatePasswordDto: UpdatePasswordDto,
-  ): UserResponse | null {
-    const userIndex = this.users.findIndex((user) => user.id === id);
-    if (userIndex === -1) return null;
+  ): Promise<UserResponse | null> {
+    const user = await this.userRepository.findById(id);
+    if (!user) return null;
 
-    if (this.users[userIndex].password !== updatePasswordDto.oldPassword) {
+    if (user.password !== updatePasswordDto.oldPassword) {
       throw new Error('Old password is incorrect');
     }
 
-    this.users[userIndex] = {
-      ...this.users[userIndex],
+    const updatedUser = await this.userRepository.update(id, {
       password: updatePasswordDto.newPassword,
-      version: this.users[userIndex].version + 1,
+      version: user.version + 1,
       updatedAt: Date.now(),
-    };
+    });
 
-    const { password: _password, ...userResponse } = this.users[userIndex];
+    if (!updatedUser) return null;
+
+    const { password: _password, ...userResponse } = updatedUser;
     return userResponse;
   }
 
-  remove(id: string): boolean {
-    const userIndex = this.users.findIndex((user) => user.id === id);
-    if (userIndex === -1) return false;
-
-    this.users.splice(userIndex, 1);
-    return true;
+  async remove(id: string): Promise<boolean> {
+    return this.userRepository.delete(id);
   }
 }
