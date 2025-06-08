@@ -7,20 +7,27 @@ export interface Album {
   year: number;
   artist: Artist;
   tracks: Track[];
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: number;
+  updatedAt: number;
 }
 
 export interface CreateAlbumDto {
   name: string;
   year: number;
-  artist?: Artist;
+  artistId: string | null;
 }
 
 export interface UpdateAlbumDto {
   name?: string;
   year?: number;
-  artist?: Artist;
+  artistId?: string | null;
 }
 
-export type AlbumResponse = Omit<Album, 'tracks'>;
+export interface AlbumResponse {
+  id: string;
+  name: string;
+  year: number;
+  artistId: string | null;
+  createdAt: number;
+  updatedAt: number;
+}

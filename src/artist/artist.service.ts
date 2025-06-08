@@ -4,18 +4,11 @@ import {
   UpdateArtistDto,
   ArtistResponse,
 } from './artist.types';
-import { TrackService } from '../track/track.service';
-import { AlbumService } from '../album/album.service';
 import { ArtistRepository } from './artist.repository';
-import { Artist } from './artist.entity';
 
 @Injectable()
 export class ArtistService {
-  constructor(
-    private readonly artistRepository: ArtistRepository,
-    private readonly trackService: TrackService,
-    private readonly albumService: AlbumService,
-  ) {}
+  constructor(private readonly artistRepository: ArtistRepository) {}
 
   async create(createArtistDto: CreateArtistDto): Promise<ArtistResponse> {
     return this.artistRepository.create(createArtistDto);
@@ -33,26 +26,28 @@ export class ArtistService {
     id: string,
     updateArtistDto: UpdateArtistDto,
   ): Promise<ArtistResponse | null> {
-    return this.artistRepository.update(id, updateArtistDto);
+    const artist = await this.artistRepository.findById(id);
+    if (!artist) {
+      return null;
+    }
+
+    return this.artistRepository.update(id, {
+      ...artist,
+      ...updateArtistDto,
+    });
   }
 
   async remove(id: string): Promise<boolean> {
-    // Update related tracks
-    const tracks = await this.trackService.findAll();
-    for (const track of tracks) {
-      if (track.artist.id === id) {
-        await this.trackService.update(track.id, { ...track, artist: null });
-      }
+    const artist = await this.artistRepository.findById(id);
+    if (!artist) {
+      return false;
     }
 
-    // Update related albums
-    const albums = await this.albumService.findAll();
-    for (const album of albums) {
-      if (album.artist.id === id) {
-        await this.albumService.update(album.id, { ...album, artist: null });
-      }
+    const isDeleted = await this.artistRepository.delete(id);
+    if (!isDeleted) {
+      return false;
     }
 
-    return this.artistRepository.delete(id);
+    return true;
   }
 }

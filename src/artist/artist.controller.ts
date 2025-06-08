@@ -49,7 +49,7 @@ export class ArtistController {
   async create(
     @Body() createArtistDto: CreateArtistDto,
   ): Promise<ArtistResponse> {
-    if (!createArtistDto.name || createArtistDto.grammy === undefined) {
+    if (!createArtistDto.name || typeof createArtistDto.grammy !== 'boolean') {
       throw new HttpException(
         'Bad request. Body does not contain required fields',
         HttpStatus.BAD_REQUEST,
@@ -70,10 +70,7 @@ export class ArtistController {
       );
     }
 
-    if (
-      typeof updateArtistDto.name !== 'string' ||
-      typeof updateArtistDto.grammy !== 'boolean'
-    ) {
+    if (!updateArtistDto.name || typeof updateArtistDto.grammy !== 'boolean') {
       throw new HttpException(
         'Bad request. Body does not contain required fields',
         HttpStatus.BAD_REQUEST,

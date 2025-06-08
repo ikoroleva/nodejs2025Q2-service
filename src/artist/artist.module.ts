@@ -5,10 +5,9 @@ import { ArtistService } from './artist.service';
 import { ArtistRepository } from './artist.repository';
 import { Artist } from './artist.entity';
 import { TrackModule } from '../track/track.module';
-import { AlbumModule } from '../album/album.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Artist]), TrackModule, AlbumModule],
+  imports: [TypeOrmModule.forFeature([Artist]), TrackModule],
   controllers: [ArtistController],
   providers: [ArtistService, ArtistRepository],
   exports: [ArtistService],

@@ -1,42 +1,52 @@
 import { Injectable } from '@nestjs/common';
 import { CreateAlbumDto, UpdateAlbumDto, AlbumResponse } from './album.types';
-import { TrackService } from '../track/track.service';
 import { AlbumRepository } from './album.repository';
-import { Album } from './album.entity';
+import { ArtistService } from '../artist/artist.service';
 
 @Injectable()
 export class AlbumService {
   constructor(
     private readonly albumRepository: AlbumRepository,
-    private readonly trackService: TrackService,
+    private readonly artistService: ArtistService,
   ) {}
 
   async create(createAlbumDto: CreateAlbumDto): Promise<AlbumResponse> {
-    return this.albumRepository.create(createAlbumDto);
+    let artist = null;
+    if (createAlbumDto.artistId) {
+      artist = await this.artistService.findOne(createAlbumDto.artistId);
+      if (!artist) {
+        throw new Error('Artist not found');
+      }
+    }
+
+    const album = await this.albumRepository.create({
+      name: createAlbumDto.name,
+      year: createAlbumDto.year,
+      artist,
+    });
+
+    return this.albumRepository.findOneWithResponse(album.id);
   }
 
   async findAll(): Promise<AlbumResponse[]> {
-    return this.albumRepository.findAll();
+    return this.albumRepository.findAllWithResponse();
   }
 
   async findOne(id: string): Promise<AlbumResponse | null> {
-    return this.albumRepository.findById(id);
+    return this.albumRepository.findOneWithResponse(id);
   }
 
   async update(
     id: string,
     updateAlbumDto: UpdateAlbumDto,
   ): Promise<AlbumResponse | null> {
-    return this.albumRepository.update(id, updateAlbumDto);
+    return this.albumRepository.updateWithResponse(id, updateAlbumDto);
   }
 
   async remove(id: string): Promise<boolean> {
-    // Update related tracks
-    const tracks = await this.trackService.findAll();
-    for (const track of tracks) {
-      if (track.album.id === id) {
-        await this.trackService.update(track.id, { ...track, album: null });
-      }
+    const album = await this.albumRepository.findById(id);
+    if (!album) {
+      return false;
     }
 
     return this.albumRepository.delete(id);

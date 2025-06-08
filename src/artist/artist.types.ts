@@ -2,6 +2,8 @@ export interface Artist {
   id: string;
   name: string;
   grammy: boolean;
+  createdAt: number;
+  updatedAt: number;
 }
 
 export interface CreateArtistDto {

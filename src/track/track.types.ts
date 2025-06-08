@@ -7,22 +7,30 @@ export interface Track {
   duration: number;
   album: Album;
   artist: Artist;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: number;
+  updatedAt: number;
 }
 
 export interface CreateTrackDto {
   name: string;
   duration: number;
-  album?: Album;
-  artist?: Artist;
+  artistId: string | null;
+  albumId: string | null;
 }
 
 export interface UpdateTrackDto {
   name?: string;
   duration?: number;
-  album?: Album;
-  artist?: Artist;
+  artistId?: string | null;
+  albumId?: string | null;
 }
 
-export type TrackResponse = Track;
+export interface TrackResponse {
+  id: string;
+  name: string;
+  duration: number;
+  artistId: string | null;
+  albumId: string | null;
+  createdAt: number;
+  updatedAt: number;
+}

@@ -2,13 +2,17 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  CreateDateColumn,
-  UpdateDateColumn,
   ManyToOne,
   OneToMany,
+  ValueTransformer,
 } from 'typeorm';
 import { Artist } from '../artist/artist.entity';
 import { Track } from '../track/track.entity';
+
+const bigintTransformer: ValueTransformer = {
+  to: (value: number) => value,
+  from: (value: string) => Number(value),
+};
 
 @Entity('albums')
 export class Album {
@@ -27,9 +31,17 @@ export class Album {
   @OneToMany(() => Track, (track) => track.album)
   tracks: Track[];
 
-  @CreateDateColumn()
-  createdAt: Date;
+  @Column({
+    type: 'bigint',
+    default: () => 'EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) * 1000',
+    transformer: bigintTransformer,
+  })
+  createdAt: number;
 
-  @UpdateDateColumn()
-  updatedAt: Date;
+  @Column({
+    type: 'bigint',
+    default: () => 'EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) * 1000',
+    transformer: bigintTransformer,
+  })
+  updatedAt: number;
 }

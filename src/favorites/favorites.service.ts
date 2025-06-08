@@ -36,12 +36,14 @@ export class FavoritesService {
       artists: artists.filter(
         (artist): artist is NonNullable<typeof artist> => artist !== null,
       ),
-      albums: albums.filter(
+      /*albums: albums.filter(
         (album): album is NonNullable<typeof album> => album !== null,
-      ) as Album[],
-      tracks: tracks.filter(
+      ) as Album[],*/
+      albums: null,
+      /*tracks: tracks.filter(
         (track): track is NonNullable<typeof track> => track !== null,
-      ),
+      ),*/
+      tracks: null,
     };
   }
 
