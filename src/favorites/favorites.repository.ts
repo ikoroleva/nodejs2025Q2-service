@@ -13,10 +13,18 @@ export class FavoritesRepository extends BaseRepository<Favorites> {
     super(favoritesRepository);
   }
 
-  async findByUserId(userId: string): Promise<Favorites | null> {
+  async findFavorites(): Promise<Favorites | null> {
     return this.favoritesRepository.findOne({
-      where: { user: { id: userId } },
-      relations: ['user'],
+      where: {},
     });
+  }
+
+  async updateFavorites(id: string): Promise<Favorites | null> {
+    const entity = await this.findById(id);
+    if (!entity) {
+      return null;
+    }
+
+    return this.repository.save(entity);
   }
 }

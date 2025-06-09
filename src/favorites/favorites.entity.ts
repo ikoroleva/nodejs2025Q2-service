@@ -1,33 +1,40 @@
 import {
   Entity,
   PrimaryGeneratedColumn,
-  ManyToOne,
-  CreateDateColumn,
-  UpdateDateColumn,
   Column,
+  ValueTransformer,
 } from 'typeorm';
-import { User } from '../user/user.entity';
+
+const bigintTransformer: ValueTransformer = {
+  to: (value: number) => value,
+  from: (value: string) => Number(value),
+};
 
 @Entity('favorites')
 export class Favorites {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => User)
-  user: User;
-
-  @Column('simple-array')
+  @Column('text', { array: true, default: () => 'ARRAY[]::text[]' })
   artists: string[];
 
-  @Column('simple-array')
+  @Column('text', { array: true, default: () => 'ARRAY[]::text[]' })
   albums: string[];
 
-  @Column('simple-array')
+  @Column('text', { array: true, default: () => 'ARRAY[]::text[]' })
   tracks: string[];
 
-  @CreateDateColumn()
-  createdAt: Date;
+  @Column({
+    type: 'bigint',
+    default: () => 'EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) * 1000',
+    transformer: bigintTransformer,
+  })
+  createdAt: number;
 
-  @UpdateDateColumn()
-  updatedAt: Date;
+  @Column({
+    type: 'bigint',
+    default: () => 'EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) * 1000',
+    transformer: bigintTransformer,
+  })
+  updatedAt: number;
 }

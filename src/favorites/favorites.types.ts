@@ -1,25 +1,18 @@
-import { Request } from 'express';
-import { User } from '../user/user.entity';
-import { Artist } from '../artist/artist.types';
-import { Album } from '../album/album.types';
-import { Track } from '../track/track.types';
-
-export interface CustomRequest extends Request {
-  user: User;
-}
+import { ArtistResponse } from '../artist/artist.types';
+import { AlbumResponse } from '../album/album.types';
+import { TrackResponse } from '../track/track.types';
 
 export interface Favorites {
   id: string;
-  user: User;
   artists: string[];
   albums: string[];
   tracks: string[];
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: number;
+  updatedAt: number;
 }
 
 export interface FavoritesResponse {
-  artists: Artist[];
-  albums: Album[];
-  tracks: Track[];
+  artists: ArtistResponse[];
+  albums: AlbumResponse[];
+  tracks: TrackResponse[];
 }

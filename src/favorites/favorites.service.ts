@@ -4,8 +4,6 @@ import { ArtistService } from '../artist/artist.service';
 import { AlbumService } from '../album/album.service';
 import { TrackService } from '../track/track.service';
 import { FavoritesRepository } from './favorites.repository';
-import { User } from '../user/user.entity';
-import { Album } from '../album/album.types';
 
 @Injectable()
 export class FavoritesService {
@@ -16,62 +14,83 @@ export class FavoritesService {
     private readonly trackService: TrackService,
   ) {}
 
-  async findAll(user: User): Promise<FavoritesResponse> {
-    const favorites = await this.favoritesRepository.findByUserId(user.id);
+  async findAll(): Promise<FavoritesResponse> {
+    const favorites = await this.favoritesRepository.findFavorites();
     if (!favorites) {
       return { artists: [], albums: [], tracks: [] };
     }
 
     const artists = await Promise.all(
-      favorites.artists.map((id) => this.artistService.findOne(id)),
+      (favorites.artists || []).map((id) => this.artistService.findOne(id)),
     );
     const albums = await Promise.all(
-      favorites.albums.map((id) => this.albumService.findOne(id)),
+      (favorites.albums || []).map((id) => this.albumService.findOne(id)),
     );
     const tracks = await Promise.all(
-      favorites.tracks.map((id) => this.trackService.findOne(id)),
+      (favorites.tracks || []).map((id) => this.trackService.findOne(id)),
     );
 
     return {
-      artists: artists.filter(
-        (artist): artist is NonNullable<typeof artist> => artist !== null,
-      ),
-      /*albums: albums.filter(
-        (album): album is NonNullable<typeof album> => album !== null,
-      ) as Album[],*/
-      albums: null,
-      /*tracks: tracks.filter(
-        (track): track is NonNullable<typeof track> => track !== null,
-      ),*/
-      tracks: null,
+      artists: artists
+        .filter(
+          (artist): artist is NonNullable<typeof artist> => artist !== null,
+        )
+        .map((artist) => ({
+          id: artist.id,
+          name: artist.name,
+          grammy: artist.grammy,
+        })),
+      albums: albums
+        .filter((album): album is NonNullable<typeof album> => album !== null)
+        .map((album) => ({
+          id: album.id,
+          name: album.name,
+          year: album.year,
+          artistId: album.artistId,
+        })),
+      tracks: tracks
+        .filter((track): track is NonNullable<typeof track> => track !== null)
+        .map((track) => ({
+          id: track.id,
+          name: track.name,
+          duration: track.duration,
+          artistId: track.artistId,
+          albumId: track.albumId,
+        })),
     };
   }
 
-  async addTrack(user: User, id: string): Promise<void> {
-    const track = await this.trackService.findOne(id);
-    if (!track) {
-      throw new Error('Track not found');
-    }
-
-    let favorites = await this.favoritesRepository.findByUserId(user.id);
+  private async getOrCreateFavorites(): Promise<Favorites> {
+    let favorites = await this.favoritesRepository.findFavorites();
     if (!favorites) {
       favorites = await this.favoritesRepository.create({
-        user,
         artists: [],
         albums: [],
         tracks: [],
       });
     }
-
-    if (!favorites.tracks.includes(id)) {
-      favorites.tracks.push(id);
-      await this.favoritesRepository.update(favorites.id, favorites);
-    }
+    return favorites;
   }
 
-  async removeTrack(user: User, id: string): Promise<void> {
-    const favorites = await this.favoritesRepository.findByUserId(user.id);
-    if (!favorites) {
+  async addTrack(id: string): Promise<void> {
+    const track = await this.trackService.findOne(id);
+    if (!track) {
+      throw new Error('Track not found');
+    }
+
+    const favorites = await this.getOrCreateFavorites();
+
+    if (favorites.tracks.includes(id)) {
+      throw new Error('Track already in favorites');
+    }
+
+    favorites.tracks.push(id);
+    await this.favoritesRepository.update(favorites.id, favorites);
+  }
+
+  async removeTrack(id: string): Promise<void> {
+    const favorites = await this.favoritesRepository.findFavorites();
+    if (!favorites || !favorites.tracks) {
       throw new Error('Track not found in favorites');
     }
 
@@ -84,31 +103,25 @@ export class FavoritesService {
     await this.favoritesRepository.update(favorites.id, favorites);
   }
 
-  async addAlbum(user: User, id: string): Promise<void> {
+  async addAlbum(id: string): Promise<void> {
     const album = await this.albumService.findOne(id);
     if (!album) {
       throw new Error('Album not found');
     }
 
-    let favorites = await this.favoritesRepository.findByUserId(user.id);
-    if (!favorites) {
-      favorites = await this.favoritesRepository.create({
-        user,
-        artists: [],
-        albums: [],
-        tracks: [],
-      });
+    const favorites = await this.getOrCreateFavorites();
+
+    if (favorites.albums.includes(id)) {
+      throw new Error('Album already in favorites');
     }
 
-    if (!favorites.albums.includes(id)) {
-      favorites.albums.push(id);
-      await this.favoritesRepository.update(favorites.id, favorites);
-    }
+    favorites.albums.push(id);
+    await this.favoritesRepository.update(favorites.id, favorites);
   }
 
-  async removeAlbum(user: User, id: string): Promise<void> {
-    const favorites = await this.favoritesRepository.findByUserId(user.id);
-    if (!favorites) {
+  async removeAlbum(id: string): Promise<void> {
+    const favorites = await this.favoritesRepository.findFavorites();
+    if (!favorites || !favorites.albums) {
       throw new Error('Album not found in favorites');
     }
 
@@ -121,31 +134,25 @@ export class FavoritesService {
     await this.favoritesRepository.update(favorites.id, favorites);
   }
 
-  async addArtist(user: User, id: string): Promise<void> {
+  async addArtist(id: string): Promise<void> {
     const artist = await this.artistService.findOne(id);
     if (!artist) {
       throw new Error('Artist not found');
     }
 
-    let favorites = await this.favoritesRepository.findByUserId(user.id);
-    if (!favorites) {
-      favorites = await this.favoritesRepository.create({
-        user,
-        artists: [],
-        albums: [],
-        tracks: [],
-      });
+    const favorites = await this.getOrCreateFavorites();
+
+    if (favorites.artists.includes(id)) {
+      throw new Error('Artist already in favorites');
     }
 
-    if (!favorites.artists.includes(id)) {
-      favorites.artists.push(id);
-      await this.favoritesRepository.update(favorites.id, favorites);
-    }
+    favorites.artists.push(id);
+    await this.favoritesRepository.update(favorites.id, favorites);
   }
 
-  async removeArtist(user: User, id: string): Promise<void> {
-    const favorites = await this.favoritesRepository.findByUserId(user.id);
-    if (!favorites) {
+  async removeArtist(id: string): Promise<void> {
+    const favorites = await this.favoritesRepository.findFavorites();
+    if (!favorites || !favorites.artists) {
       throw new Error('Artist not found in favorites');
     }
 

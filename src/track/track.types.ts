@@ -31,6 +31,4 @@ export interface TrackResponse {
   duration: number;
   artistId: string | null;
   albumId: string | null;
-  createdAt: number;
-  updatedAt: number;
 }

@@ -64,12 +64,10 @@ export class InitialSchema1700000000000 implements MigrationInterface {
         "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
         "createdAt" bigint NOT NULL DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) * 1000,
         "updatedAt" bigint NOT NULL DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) * 1000,
-        "userId" uuid NOT NULL,
         "artists" text[] NOT NULL DEFAULT '{}',
         "albums" text[] NOT NULL DEFAULT '{}',
         "tracks" text[] NOT NULL DEFAULT '{}',
-        CONSTRAINT "PK_favorites" PRIMARY KEY ("id"),
-        CONSTRAINT "FK_favorites_user" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE
+        CONSTRAINT "PK_favorites" PRIMARY KEY ("id")
       )
     `);
   }

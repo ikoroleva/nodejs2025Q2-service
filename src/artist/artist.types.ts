@@ -16,4 +16,8 @@ export interface UpdateArtistDto {
   grammy: boolean;
 }
 
-export type ArtistResponse = Artist;
+export interface ArtistResponse {
+  id: string;
+  name: string;
+  grammy: boolean;
+}

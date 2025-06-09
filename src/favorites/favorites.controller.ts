@@ -7,27 +7,23 @@ import {
   HttpException,
   HttpStatus,
   HttpCode,
-  Req,
 } from '@nestjs/common';
 import { validate as uuidValidate } from 'uuid';
 import { FavoritesService } from './favorites.service';
-import { FavoritesResponse, CustomRequest } from './favorites.types';
+import { FavoritesResponse } from './favorites.types';
 
 @Controller('favs')
 export class FavoritesController {
   constructor(private readonly favoritesService: FavoritesService) {}
 
   @Get()
-  async findAll(@Req() req: CustomRequest): Promise<FavoritesResponse> {
-    return this.favoritesService.findAll(req.user);
+  async findAll(): Promise<FavoritesResponse> {
+    return this.favoritesService.findAll();
   }
 
   @Post('track/:id')
   @HttpCode(HttpStatus.CREATED)
-  async addTrack(
-    @Req() req: CustomRequest,
-    @Param('id') id: string,
-  ): Promise<void> {
+  async addTrack(@Param('id') id: string): Promise<void> {
     if (!uuidValidate(id)) {
       throw new HttpException(
         'Bad request. trackId is invalid (not uuid)',
@@ -36,7 +32,7 @@ export class FavoritesController {
     }
 
     try {
-      await this.favoritesService.addTrack(req.user, id);
+      await this.favoritesService.addTrack(id);
     } catch (error) {
       if (error.message === 'Track not found') {
         throw new HttpException(
@@ -50,10 +46,7 @@ export class FavoritesController {
 
   @Delete('track/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async removeTrack(
-    @Req() req: CustomRequest,
-    @Param('id') id: string,
-  ): Promise<void> {
+  async removeTrack(@Param('id') id: string): Promise<void> {
     if (!uuidValidate(id)) {
       throw new HttpException(
         'Bad request. trackId is invalid (not uuid)',
@@ -62,7 +55,7 @@ export class FavoritesController {
     }
 
     try {
-      await this.favoritesService.removeTrack(req.user, id);
+      await this.favoritesService.removeTrack(id);
     } catch (error) {
       if (error.message === 'Track not found in favorites') {
         throw new HttpException(
@@ -76,10 +69,7 @@ export class FavoritesController {
 
   @Post('album/:id')
   @HttpCode(HttpStatus.CREATED)
-  async addAlbum(
-    @Req() req: CustomRequest,
-    @Param('id') id: string,
-  ): Promise<void> {
+  async addAlbum(@Param('id') id: string): Promise<void> {
     if (!uuidValidate(id)) {
       throw new HttpException(
         'Bad request. albumId is invalid (not uuid)',
@@ -88,7 +78,7 @@ export class FavoritesController {
     }
 
     try {
-      await this.favoritesService.addAlbum(req.user, id);
+      await this.favoritesService.addAlbum(id);
     } catch (error) {
       if (error.message === 'Album not found') {
         throw new HttpException(
@@ -102,10 +92,7 @@ export class FavoritesController {
 
   @Delete('album/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async removeAlbum(
-    @Req() req: CustomRequest,
-    @Param('id') id: string,
-  ): Promise<void> {
+  async removeAlbum(@Param('id') id: string): Promise<void> {
     if (!uuidValidate(id)) {
       throw new HttpException(
         'Bad request. albumId is invalid (not uuid)',
@@ -114,7 +101,7 @@ export class FavoritesController {
     }
 
     try {
-      await this.favoritesService.removeAlbum(req.user, id);
+      await this.favoritesService.removeAlbum(id);
     } catch (error) {
       if (error.message === 'Album not found in favorites') {
         throw new HttpException(
@@ -128,10 +115,7 @@ export class FavoritesController {
 
   @Post('artist/:id')
   @HttpCode(HttpStatus.CREATED)
-  async addArtist(
-    @Req() req: CustomRequest,
-    @Param('id') id: string,
-  ): Promise<void> {
+  async addArtist(@Param('id') id: string): Promise<void> {
     if (!uuidValidate(id)) {
       throw new HttpException(
         'Bad request. artistId is invalid (not uuid)',
@@ -140,7 +124,7 @@ export class FavoritesController {
     }
 
     try {
-      await this.favoritesService.addArtist(req.user, id);
+      await this.favoritesService.addArtist(id);
     } catch (error) {
       if (error.message === 'Artist not found') {
         throw new HttpException(
@@ -154,10 +138,7 @@ export class FavoritesController {
 
   @Delete('artist/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async removeArtist(
-    @Req() req: CustomRequest,
-    @Param('id') id: string,
-  ): Promise<void> {
+  async removeArtist(@Param('id') id: string): Promise<void> {
     if (!uuidValidate(id)) {
       throw new HttpException(
         'Bad request. artistId is invalid (not uuid)',
@@ -166,7 +147,7 @@ export class FavoritesController {
     }
 
     try {
-      await this.favoritesService.removeArtist(req.user, id);
+      await this.favoritesService.removeArtist(id);
     } catch (error) {
       if (error.message === 'Artist not found in favorites') {
         throw new HttpException(
