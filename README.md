@@ -111,16 +111,32 @@ The API will be available at http://localhost:4000. OpenAPI documentation is at 
 
 ### Available Scripts
 ```bash
-# Start development server
+# Build and Start
+npm run build
+npm run start
 npm run start:dev
+npm run start:debug
+npm run start:prod
 
-# Run tests
+# Testing
 npm run test
-npm run test:e2e
+npm run test:cov
 
-# Lint and format
-npm run lint
+# Code Quality
 npm run format
+npm run lint
+
+# Database Migrations
+npm run migration:generate
+npm run migration:run
+npm run migration:revert
+
+# Docker Commands
+npm run docker:up
+npm run docker:stop
+npm run docker:down
+npm run docker:down:volumes
+npm run docker:scan
 ```
 
 ### Error Handling
