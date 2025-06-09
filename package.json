@@ -26,7 +26,12 @@
     "typeorm": "typeorm-ts-node-commonjs",
     "migration:generate": "npm run typeorm migration:generate -- -d typeorm.config.ts",
     "migration:run": "npm run typeorm migration:run -- -d typeorm.config.ts",
-    "migration:revert": "npm run typeorm migration:revert -- -d typeorm.config.ts"
+    "migration:revert": "npm run typeorm migration:revert -- -d typeorm.config.ts",
+    "docker:up": "docker compose up",
+    "docker:stop": "docker compose stop",
+    "docker:down": "docker compose down",
+    "docker:down:volumes": "docker compose down --volumes",
+    "docker:scan": "docker scout quickview nodejs2025q2-service-app"
   },
   "dependencies": {
     "@nestjs/common": "^10.4.16",

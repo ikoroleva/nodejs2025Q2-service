@@ -4,6 +4,7 @@ A RESTful API service for managing a personal music library with user authentica
 
 ## Quick Start
 
+### Option 1: Local Development
 1. Clone the repository
 2. Install dependencies:
 ```bash
@@ -15,6 +16,42 @@ npm install
 4. Start the server:
 ```bash
 npm run start:dev
+```
+
+### Option 2: Docker Development
+1. Clone the repository
+2. Set up environment:
+   - Copy `.env.example` to `.env`
+   - Fill in your own values in the `.env` file
+3. Start the development environment:
+```bash
+docker-compose -f docker-compose.dev.yml up --build
+```
+
+### Option 3: Docker Production
+1. Clone the repository
+2. Set up environment:
+   - Copy `.env.example` to `.env`
+   - Fill in your own values in the `.env` file
+3. Build and start the production environment:
+```bash
+docker-compose up --build
+```
+
+### Docker Image Management
+To push the images to DockerHub:
+1. Login to DockerHub:
+```bash
+docker login
+```
+2. Build the images:
+```bash
+docker-compose build
+```
+3. Push the images:
+```bash
+docker push ${DOCKER_USERNAME}/home-library-app:latest
+docker push ${DOCKER_USERNAME}/home-library-db:latest
 ```
 
 The API will be available at http://localhost:4000. OpenAPI documentation is at http://localhost:4000/doc/
@@ -59,6 +96,12 @@ The API will be available at http://localhost:4000. OpenAPI documentation is at 
 - artistId: UUID (nullable)
 - albumId: UUID (nullable)
 - duration: number
+
+### Favorites
+- id: UUID
+- artistId: UUID (nullable)
+- albumId: UUID (nullable)
+- trackId: UUID (nullable)
 
 ## Development
 
