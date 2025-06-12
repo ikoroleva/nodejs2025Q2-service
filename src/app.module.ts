@@ -10,12 +10,14 @@ import { TrackModule } from './track/track.module';
 import { ArtistModule } from './artist/artist.module';
 import { AlbumModule } from './album/album.module';
 import { FavoritesModule } from './favorites/favorites.module';
+import { LoggingModule } from './common/logging/logging.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    LoggingModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       url: process.env.DATABASE_URL,
