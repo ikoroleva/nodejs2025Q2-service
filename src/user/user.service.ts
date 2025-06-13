@@ -7,23 +7,19 @@ import { User } from './user.entity';
 export class UserService {
   constructor(private readonly userRepository: UserRepository) {}
 
-  async create(createUserDto: CreateUserDto): Promise<UserResponse> {
+  async create(createUserDto: CreateUserDto): Promise<User> {
     const existingUser = await this.userRepository.findByLogin(
       createUserDto.login,
     );
     if (existingUser) {
-      const { password: _password, ...userResponse } = existingUser;
-      return userResponse;
+      throw new Error('User already exists');
     }
 
-    const newUser = await this.userRepository.create({
+    return this.userRepository.create({
       login: createUserDto.login,
       password: createUserDto.password,
       version: 1,
     });
-
-    const { password: _password, ...userResponse } = newUser;
-    return userResponse;
   }
 
   async findAll(): Promise<UserResponse[]> {
