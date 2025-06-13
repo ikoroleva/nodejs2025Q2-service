@@ -13,7 +13,11 @@ npm install
 3. Set up environment:
    - Copy `.env.example` to `.env`
    - Fill in your own values in the `.env` file
-4. Start the server:
+4. Run database migrations:
+```bash
+npm run migration:run
+```
+5. Start the server:
 ```bash
 npm run start:dev
 ```
@@ -23,7 +27,11 @@ npm run start:dev
 2. Set up environment:
    - Copy `.env.example` to `.env`
    - Fill in your own values in the `.env` file
-3. Start the development environment:
+3. Run database migrations:
+```bash
+npm run migration:run
+```
+4. Start the development environment:
 ```bash
 docker-compose -f docker-compose.dev.yml up --build
 ```
@@ -33,7 +41,11 @@ docker-compose -f docker-compose.dev.yml up --build
 2. Set up environment:
    - Copy `.env.example` to `.env`
    - Fill in your own values in the `.env` file
-3. Build and start the production environment:
+3. Run database migrations:
+```bash
+npm run migration:run
+```
+4. Build and start the production environment:
 ```bash
 docker-compose up --build
 ```
