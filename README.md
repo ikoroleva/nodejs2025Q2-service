@@ -4,54 +4,29 @@ A RESTful API service for managing a personal music library with user authentica
 
 ## Quick Start
 
-### Option 1: Local Development
-1. Clone the repository
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd <repository-name>
+```
+
 2. Install dependencies:
 ```bash
 npm install
 ```
+
 3. Set up environment:
    - Copy `.env.example` to `.env`
    - Fill in your own values in the `.env` file
-4. Start the server:
-```bash
-npm run start:dev
-```
 
-### Option 2: Docker Development
-1. Clone the repository
-2. Set up environment:
-   - Copy `.env.example` to `.env`
-   - Fill in your own values in the `.env` file
-3. Start the development environment:
-```bash
-docker-compose -f docker-compose.dev.yml up --build
-```
-
-### Option 3: Docker Production
-1. Clone the repository
-2. Set up environment:
-   - Copy `.env.example` to `.env`
-   - Fill in your own values in the `.env` file
-3. Build and start the production environment:
+4. Start the application and database using Docker Compose:
 ```bash
 docker-compose up --build
 ```
 
-### Docker Image Management
-To push the images to DockerHub:
-1. Login to DockerHub:
+5. Run database migrations:
 ```bash
-docker login
-```
-2. Build the images:
-```bash
-docker-compose build
-```
-3. Push the images:
-```bash
-docker push ${DOCKER_USERNAME}/home-library-app:latest
-docker push ${DOCKER_USERNAME}/home-library-db:latest
+npm run migration:run
 ```
 
 The API will be available at http://localhost:4000. OpenAPI documentation is at http://localhost:4000/doc/
@@ -59,8 +34,9 @@ The API will be available at http://localhost:4000. OpenAPI documentation is at 
 ## API Overview
 
 ### Authentication
-- POST /login - User login
-- POST /signup - User registration
+- POST /auth/signup - User registration
+- POST /auth/login - User login
+- POST /auth/refresh - Refresh user access token
 
 ### Main Endpoints
 - Users: GET,POST /user, GET,PUT,DELETE /user/:id
@@ -120,6 +96,7 @@ npm run start:prod
 
 # Testing
 npm run test
+npm run test:auth
 npm run test:cov
 
 # Code Quality
@@ -147,7 +124,3 @@ The API uses standard HTTP status codes:
 - 404 Not Found - Resource not found
 - 409 Conflict - Resource exists
 - 422 Unprocessable Entity - Invalid reference
-
-## License
-
-This project is licensed under the MIT License.

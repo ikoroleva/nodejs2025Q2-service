@@ -6,7 +6,12 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
-import { SignupDto, LoginDto, RefreshTokenDto, TokenResponseDto } from './dto/auth.dto';
+import {
+  SignupDto,
+  LoginDto,
+  RefreshTokenDto,
+  TokenResponseDto,
+} from './dto/auth.dto';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -37,7 +42,10 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const isPasswordValid = await bcrypt.compare(loginDto.password, user.password);
+    const isPasswordValid = await bcrypt.compare(
+      loginDto.password,
+      user.password,
+    );
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
@@ -51,9 +59,12 @@ export class AuthService {
     }
 
     try {
-      const payload = await this.jwtService.verifyAsync(refreshTokenDto.refreshToken, {
-        secret: process.env.JWT_REFRESH_SECRET_KEY,
-      });
+      const payload = await this.jwtService.verifyAsync(
+        refreshTokenDto.refreshToken,
+        {
+          secret: process.env.JWT_REFRESH_SECRET_KEY,
+        },
+      );
 
       const user = await this.userService.findOne(payload.userId);
       if (!user) {
@@ -69,7 +80,10 @@ export class AuthService {
     }
   }
 
-  private async generateTokens(userId: string, login: string): Promise<TokenResponseDto> {
+  private async generateTokens(
+    userId: string,
+    login: string,
+  ): Promise<TokenResponseDto> {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(
         { userId, login },
