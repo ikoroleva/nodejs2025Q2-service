@@ -4,11 +4,7 @@ A RESTful API service for managing a personal music library with user authentica
 
 ## Quick Start
 
-1. Clone the repository:
-```bash
-git clone <repository-url>
-cd <repository-name>
-```
+1. Clone the repository
 
 2. Install dependencies:
 ```bash
@@ -27,6 +23,22 @@ docker-compose up --build
 5. Run database migrations:
 ```bash
 npm run migration:run
+```
+
+### Docker Image Management
+To push the images to DockerHub:
+1. Login to DockerHub:
+```bash
+docker login
+```
+2. Build the images:
+```bash
+docker-compose build
+```
+3. Push the images:
+```bash
+docker push ${DOCKER_USERNAME}/home-library-app:latest
+docker push ${DOCKER_USERNAME}/home-library-db:latest
 ```
 
 The API will be available at http://localhost:4000. OpenAPI documentation is at http://localhost:4000/doc/
