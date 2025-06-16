@@ -1,23 +1,34 @@
+import { Album } from '../album/album.entity';
+import { Artist } from '../artist/artist.entity';
+
 export interface Track {
   id: string;
   name: string;
-  artistId: string | null;
-  albumId: string | null;
   duration: number;
+  album: Album;
+  artist: Artist;
+  createdAt: number;
+  updatedAt: number;
 }
 
 export interface CreateTrackDto {
   name: string;
-  artistId?: string | null;
-  albumId?: string | null;
   duration: number;
+  artistId: string | null;
+  albumId: string | null;
 }
 
 export interface UpdateTrackDto {
-  name: string;
+  name?: string;
+  duration?: number;
   artistId?: string | null;
   albumId?: string | null;
-  duration: number;
 }
 
-export type TrackResponse = Track;
+export interface TrackResponse {
+  id: string;
+  name: string;
+  duration: number;
+  artistId: string | null;
+  albumId: string | null;
+}

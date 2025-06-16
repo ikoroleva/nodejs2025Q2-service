@@ -4,6 +4,7 @@ A RESTful API service for managing a personal music library with user authentica
 
 ## Quick Start
 
+### Option 1: Local Development
 1. Clone the repository
 2. Install dependencies:
 ```bash
@@ -12,9 +13,57 @@ npm install
 3. Set up environment:
    - Copy `.env.example` to `.env`
    - Fill in your own values in the `.env` file
-4. Start the server:
+4. Run database migrations:
+```bash
+npm run migration:run
+```
+5. Start the server:
 ```bash
 npm run start:dev
+```
+
+### Option 2: Docker Development
+1. Clone the repository
+2. Set up environment:
+   - Copy `.env.example` to `.env`
+   - Fill in your own values in the `.env` file
+3. Run database migrations:
+```bash
+npm run migration:run
+```
+4. Start the development environment:
+```bash
+docker-compose -f docker-compose.dev.yml up --build
+```
+
+### Option 3: Docker Production
+1. Clone the repository
+2. Set up environment:
+   - Copy `.env.example` to `.env`
+   - Fill in your own values in the `.env` file
+3. Run database migrations:
+```bash
+npm run migration:run
+```
+4. Build and start the production environment:
+```bash
+docker-compose up --build
+```
+
+### Docker Image Management
+To push the images to DockerHub:
+1. Login to DockerHub:
+```bash
+docker login
+```
+2. Build the images:
+```bash
+docker-compose build
+```
+3. Push the images:
+```bash
+docker push ${DOCKER_USERNAME}/home-library-app:latest
+docker push ${DOCKER_USERNAME}/home-library-db:latest
 ```
 
 The API will be available at http://localhost:4000. OpenAPI documentation is at http://localhost:4000/doc/
@@ -60,6 +109,12 @@ The API will be available at http://localhost:4000. OpenAPI documentation is at 
 - albumId: UUID (nullable)
 - duration: number
 
+### Favorites
+- id: UUID
+- artistId: UUID (nullable)
+- albumId: UUID (nullable)
+- trackId: UUID (nullable)
+
 ## Development
 
 ### Prerequisites
@@ -68,16 +123,32 @@ The API will be available at http://localhost:4000. OpenAPI documentation is at 
 
 ### Available Scripts
 ```bash
-# Start development server
+# Build and Start
+npm run build
+npm run start
 npm run start:dev
+npm run start:debug
+npm run start:prod
 
-# Run tests
+# Testing
 npm run test
-npm run test:e2e
+npm run test:cov
 
-# Lint and format
-npm run lint
+# Code Quality
 npm run format
+npm run lint
+
+# Database Migrations
+npm run migration:generate
+npm run migration:run
+npm run migration:revert
+
+# Docker Commands
+npm run docker:up
+npm run docker:stop
+npm run docker:down
+npm run docker:down:volumes
+npm run docker:scan
 ```
 
 ### Error Handling

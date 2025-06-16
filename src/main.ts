@@ -6,11 +6,13 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 async function bootstrap() {
   dotenv.config();
   const app = await NestFactory.create(AppModule);
-  
+
   // Swagger configuration
   const config = new DocumentBuilder()
     .setTitle('Home Library API')
-    .setDescription('A RESTful API service for managing a personal music library with user authentication, CRUD operations for artists, albums, tracks, and favorites management.')
+    .setDescription(
+      'A RESTful API service for managing a personal music library with user authentication, CRUD operations for artists, albums, tracks, and favorites management.',
+    )
     .setVersion('1.0')
     .addBearerAuth()
     .build();

@@ -1,15 +1,18 @@
-import { Artist } from '../artist/artist.types';
-import { Album } from '../album/album.types';
-import { Track } from '../track/track.types';
+import { ArtistResponse } from '../artist/artist.types';
+import { AlbumResponse } from '../album/album.types';
+import { TrackResponse } from '../track/track.types';
 
 export interface Favorites {
+  id: string;
   artists: string[];
   albums: string[];
   tracks: string[];
+  createdAt: number;
+  updatedAt: number;
 }
 
 export interface FavoritesResponse {
-  artists: Artist[];
-  albums: Album[];
-  tracks: Track[];
-} 
+  artists: ArtistResponse[];
+  albums: AlbumResponse[];
+  tracks: TrackResponse[];
+}

@@ -19,12 +19,12 @@ export class TrackController {
   constructor(private readonly trackService: TrackService) {}
 
   @Get()
-  findAll(): TrackResponse[] {
+  async findAll(): Promise<TrackResponse[]> {
     return this.trackService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string): TrackResponse {
+  async findOne(@Param('id') id: string): Promise<TrackResponse> {
     if (!uuidValidate(id)) {
       throw new HttpException(
         'Bad request. trackId is invalid (not uuid)',
@@ -32,7 +32,7 @@ export class TrackController {
       );
     }
 
-    const track = this.trackService.findOne(id);
+    const track = await this.trackService.findOne(id);
     if (!track) {
       throw new HttpException('Track not found', HttpStatus.NOT_FOUND);
     }
@@ -42,7 +42,7 @@ export class TrackController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() createTrackDto: CreateTrackDto): TrackResponse {
+  async create(@Body() createTrackDto: CreateTrackDto): Promise<TrackResponse> {
     if (!createTrackDto.name || typeof createTrackDto.duration !== 'number') {
       throw new HttpException(
         'Bad request. Body does not contain required fields',
@@ -53,10 +53,10 @@ export class TrackController {
   }
 
   @Put(':id')
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateTrackDto: UpdateTrackDto,
-  ): TrackResponse {
+  ): Promise<TrackResponse> {
     if (!uuidValidate(id)) {
       throw new HttpException(
         'Bad request. trackId is invalid (not uuid)',
@@ -74,7 +74,7 @@ export class TrackController {
       );
     }
 
-    const track = this.trackService.update(id, updateTrackDto);
+    const track = await this.trackService.update(id, updateTrackDto);
     if (!track) {
       throw new HttpException('Track not found', HttpStatus.NOT_FOUND);
     }
@@ -84,7 +84,7 @@ export class TrackController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id') id: string): void {
+  async remove(@Param('id') id: string): Promise<void> {
     if (!uuidValidate(id)) {
       throw new HttpException(
         'Bad request. trackId is invalid (not uuid)',
@@ -92,7 +92,7 @@ export class TrackController {
       );
     }
 
-    const isRemoved = this.trackService.remove(id);
+    const isRemoved = await this.trackService.remove(id);
     if (!isRemoved) {
       throw new HttpException('Track not found', HttpStatus.NOT_FOUND);
     }

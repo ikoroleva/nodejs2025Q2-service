@@ -19,12 +19,12 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  findAll(): UserResponse[] {
+  async findAll(): Promise<UserResponse[]> {
     return this.userService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string): UserResponse {
+  async findOne(@Param('id') id: string): Promise<UserResponse> {
     if (!uuidValidate(id)) {
       throw new HttpException(
         'Bad request. userId is invalid (not uuid)',
@@ -32,7 +32,7 @@ export class UserController {
       );
     }
 
-    const user = this.userService.findOne(id);
+    const user = await this.userService.findOne(id);
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
@@ -41,7 +41,7 @@ export class UserController {
   }
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto): UserResponse {
+  async create(@Body() createUserDto: CreateUserDto): Promise<UserResponse> {
     if (!createUserDto.login || !createUserDto.password) {
       throw new HttpException(
         'Login and password are required',
@@ -49,14 +49,14 @@ export class UserController {
       );
     }
 
-    return this.userService.create(createUserDto);
+    return await this.userService.create(createUserDto);
   }
 
   @Put(':id')
-  updatePassword(
+  async updatePassword(
     @Param('id') id: string,
     @Body() updatePasswordDto: UpdatePasswordDto,
-  ): UserResponse {
+  ): Promise<UserResponse> {
     if (!uuidValidate(id)) {
       throw new HttpException(
         'Bad request. userId is invalid (not uuid)',
@@ -72,7 +72,7 @@ export class UserController {
     }
 
     try {
-      const user = this.userService.updatePassword(id, updatePasswordDto);
+      const user = await this.userService.updatePassword(id, updatePasswordDto);
       if (!user) {
         throw new HttpException('User not found', HttpStatus.NOT_FOUND);
       }
@@ -90,7 +90,7 @@ export class UserController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id') id: string): void {
+  async remove(@Param('id') id: string): Promise<void> {
     if (!uuidValidate(id)) {
       throw new HttpException(
         'Bad request. userId is invalid (not uuid)',
@@ -98,7 +98,7 @@ export class UserController {
       );
     }
 
-    const isDeleted = this.userService.remove(id);
+    const isDeleted = await this.userService.remove(id);
     if (!isDeleted) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
