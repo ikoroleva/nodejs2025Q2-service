@@ -43,6 +43,24 @@ docker push ${DOCKER_USERNAME}/home-library-db:latest
 
 The API will be available at http://localhost:4000. OpenAPI documentation is at http://localhost:4000/doc/
 
+### Logging
+When running the application with Docker, logs are sent to the standard output of the `app` container. You can view them with the following commands:
+
+- To see all logs for the application:
+  ```bash
+  docker-compose logs app
+  ```
+
+- To follow the logs in real-time:
+  ```bash
+  docker-compose logs -f app
+  ```
+
+- To save the logs to a file:
+  ```bash
+  docker-compose logs app > app.log
+  ```
+
 ## API Overview
 
 ### Authentication
